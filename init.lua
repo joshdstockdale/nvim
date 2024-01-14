@@ -239,7 +239,21 @@ require('lazy').setup({
         config = function()
             require("dap-go").setup()
         end
-    }
+  },
+  {
+    "ray-x/go.nvim",
+    dependencies = {  -- optional packages
+      "ray-x/guihua.lua",
+      "neovim/nvim-lspconfig",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require("go").setup()
+    end,
+    event = {"CmdlineEnter"},
+    ft = {"go", 'gomod'},
+   -- build = ':lua require("go.install").update_all_sync()' -- if you need to install/update all binaries
+  }
     -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
     --       These are some example plugins that I've included in the kickstart repository.
     --       Uncomment any of the lines below to enable them.
@@ -254,6 +268,17 @@ require('lazy').setup({
     --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
     -- { import = 'custom.plugins' },
 }, {})
+-- Run gofmt + goimport on save
+
+local format_sync_grp = vim.api.nvim_create_augroup("GoImport", {})
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.go",
+  callback = function()
+   require('go.format').goimport()
+  end,
+  group = format_sync_grp,
+})
+
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
